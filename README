@@ -1,0 +1,4 @@
+Zak the bot
+Simple chatbot for fun and useful stuff
+You must install the "t-gram"-bot-api python wrapper from:
+https://github.com/datamachine/twx.botapi
