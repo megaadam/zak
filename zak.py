@@ -34,10 +34,8 @@ def weekday():
 
 def startupGreeting(update):
 	chat_id = update.message.chat.id
-	botSpeak = "Hi guys\n"
-	botSpeak += "I am here!! Thank God it's " + weekday() + "! \n"
-	botSpeak += "Try to break me if you can!"
-
+	botSpeak = "Hi guys I am now on https://github.com/megaadam/zak\n"
+	botSpeak += "Thank God it's " + weekday() + "! \n"
 	bot.send_message(chat_id, botSpeak).wait()
 
 hiGus = False
@@ -232,9 +230,7 @@ print "Hello World!"
 Setup the bot
 """
 f = open( "./res/tgram_token", "r")
-print f
 token = f.readline()
-print token
 f.close()
 bot = TelegramBot(token)
 
