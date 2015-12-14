@@ -35,7 +35,7 @@ class FoodParser(HTMLParser.HTMLParser):
 
 	def handle_data(self, data):
 		if self.in_h3:
-			print(str(data) + " =====================================" )
+			print(data + " =====================================" )
 			if(self.restaurant != ""):
 				self.menu[self.restaurant] = self.foodlist
 			self.restaurant = data
@@ -46,20 +46,23 @@ class FoodParser(HTMLParser.HTMLParser):
 			self.foodlist.append(data)	
 			#self.foodlist = data.split("\n")			
 try:
-	req = requests.get("https://wcdma-userarea.rnd.ki.sw.ericsson.se/ezivkoc/lunch.php")
+	url = "https://wcdma-userarea.rnd.ki.sw.ericsson.se/ezivkoc/lunch.php"
+	url = "http://dummy" # uncomment for non ECN test
+	req = requests.get(url)
 
-	textRaw = req.text
-	htmlText = textRaw.encode('utf-8')	
+	req.encoding = 'utf-8'
+	htmlText = req.text
+	print req.encoding
+	print htmlText
 
 except requests.exceptions.ConnectionError:
 	print "ConnectionError, failed to access https://wcdma-userarea.rnd.ki.sw.ericsson.se/ezivkoc/lunch.php"
 	print "Will read menus from December 10 locally."
-	f = open("res/menus.html")
-	htmlText = str(f.readlines())
-	htmlText = htmlText.encode('cp1252')	
+	htmlText = open("res/menus.html", "r").read()
+	htmlText = str(htmlText)	
 
 except:
-	print "other exception"
+	print " ===> other exception"
 	e = sys.exc_info()[0]
 	print e
 
