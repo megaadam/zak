@@ -40,10 +40,10 @@ class Menu:
 	def __init__(self):
 		self.url = "https://wcdma-userarea.rnd.ki.sw.ericsson.se/ezivkoc/lunch.php"
 		self.localmode = False
-		self.retrieveMenu()
+		self.reloadMenu()
 		self.ignorelist=["Boscherian"]
 
-	def retrieveMenu(self):				
+	def reloadMenu(self):				
 		try:
 			
 			#self.url = "http://dummy" # uncomment for non ECN test
@@ -96,7 +96,3 @@ class Menu:
 
 	def getUrl(self):
 		return self.url
-
-
-
-

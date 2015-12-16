@@ -5,20 +5,14 @@
 # Created by Adam Horvath
 
 from twx.botapi import TelegramBot, ReplyKeyboardMarkup, ReplyMarkup, ForceReply
-import sys
+import sys, traceback
 import time
 from datetime import date, datetime
 from random import randint
-from parse import Menu
 
-class Menu:
-	@staticmethod
-	def menu():
-		menustring = "The menu for " + weekday() + " is: \n"
-		menustring += u"Ericofood: Vatten å Bröd \n"
-		menustring += u"Factory:   Vatten å Bröd \n"
-		menustring += u"Zenit:     Vatten å Bröd \n"
-		return menustring
+
+from parse import Menu
+from phrases import Phrase
 
 def weekday():
 	wd=date.today().weekday()
@@ -78,7 +72,7 @@ def checkArturo(update):
 
 	if(hiArturo == False):
 		hiArturo=True
-		botSpeak = "Eyy Arturito! \n Kompis! \nI am sorry man, I will never call you evil agan."
+		botSpeak = "Eyy Arturito! \n Kompis! \nI am sorry man, I will never call you evil again."
 		bot.send_message(chat_id, botSpeak).wait()
 
 hiDiego = False
@@ -101,20 +95,24 @@ def checkDiego(update):
 		bot.send_message(chat_id, botSpeak).wait()
 		hiDiego2 = True
 
-def nickname(name):
-	nicks= {
-	"Arturo": ["Arturo", "Artie", "Arturix", "R2", "artoooo", "Arturiño", "Diztroyer of Badness", "Destroyer of Badness", "Dooderiño", "Hombre", "Smarturo", "Zapata", "Zapatito", "mi amor"],
-	"Gustav": ["Gustav", "Gus", "Gustavo", "Gus doood", "Gee One", "dude", "Mister", "Gus-man"],
-	"Adamski": ["Adamski", "Adam", "Adamito", "Hungarian dude", "dood", "Mister", "Adamsson", "Adamiño"],
-	"Diego": ["Diego", "D1", "Diegs", "Diegito", "Señor"]
-	}
-
-	if(name in nicks):
-		nix = nicks[name]
-		theNick = nix[randint(0, len(nix)-1)]
-		return theNick
+def checkGithub(update):
+	chat_id = update.message.chat.id
+	msg = update.message.text
+	nick = nickname(update.message.sender.first_name)
+	if("?" in msg):
+		botSpeak = "Good question " + nick + "!"
+		bot.send_message(chat_id, botSpeak).wait()
+		time.sleep(2.2)
 	else:
-		return name
+		botSpeak = "Well " + nick + ","
+		bot.send_message(chat_id, botSpeak).wait()
+		time.sleep(0.2)
+	botSpeak = "My source code is in Python \nYou can in fact expect to find it at https://github.com/megaadam/zak" 
+	bot.send_message(chat_id, botSpeak).wait()
+
+
+def nickname(name):
+	return vocab.nickname(name)
 
 def checkZack(update):
 	chat_id = update.message.chat.id
@@ -190,19 +188,68 @@ def sendImageFromUrl(chat_id, url):
         ('photo', 'image.jpg', output.getvalue()),
     ])
 
+def genericLunch(update):
+	chat_id = update.message.chat.id;
+	nick = nickname(update.message.sender.first_name);
+	botSpeak = "Well " + nick + ", I guess you're hungry! Let me check."
+	bot.send_message(chat_id, botSpeak).wait()
+
+	rest = theMenu.rndRest()
+	food = theMenu.rndFood(rest)
+
+	# Needs test online/offline !!
+	rest = rest.decode('latin1')
+	food = food.decode('latin1')
+
+	botSpeak = "Today I would avoid " + rest + " and their tastless " + food + "."
+	print botSpeak
+	bot.send_message(chat_id, botSpeak).wait()
+
+	rest = theMenu.rndRest()
+	food = theMenu.rndFood(rest)
+
+	# Needs test online/offline !!
+	rest = rest.decode('latin1')
+	food = food.decode('latin1')
+	botSpeak = "But you could try the interesting " + food + " at " + rest + "."
+	print botSpeak
+	bot.send_message(chat_id, botSpeak).wait()
+
 def checkLunch(update):
 	chat_id = update.message.chat.id;
-	first_name = update.message.sender.first_name;
-	botSpeak = "Well " + nickname(first_name) + ", I guess you're hungry! Let me check."
-	bot.send_message(chat_id, botSpeak).wait()
-	time.sleep(1)
-	bot.send_message(chat_id, "Just a second...").wait()
+	nick = nickname(update.message.sender.first_name);
 
-	time.sleep(4)
-	botSpeak = Menu.menu()
-#	botSpeak +=  update.message.text
-#	chat_id = update.message.chat.id;
+	if(date.today().weekday() > 4):
+		botSpeak = nick + " get real! The restaurants are closed on " + weekday() + "s"
+		bot.send_message(chat_id, botSpeak).wait()
+		return
+
+	hour = datetime.now().hour
+	hour = 12
+	print "LUNCH HOUR !!!!!!"
+	if(hour < 6):
+		botSpeak = nick + "! Don't be ridiculous. This is not the time for lunch, and you should be asleep."
+		bot.send_message(chat_id, botSpeak).wait()
+		return
+
+	if(hour < 10):
+		botSpeak = "I think it's a bit early for lunch. Ask me after 10 again."
+		bot.send_message(chat_id, botSpeak).wait()
+		return
+
+	if(hour < 14):
+		genericLunch(update)
+		return
+
+	if(hour < 18):
+		botSpeak = "No such thing as a free lunch " + nick + "."
+		bot.send_message(chat_id, botSpeak).wait()
+		return
+
+	botSpeak = "At this hour, " + nick + "... I would rather recommend dinner."
 	bot.send_message(chat_id, botSpeak).wait()
+
+
 
 def checkBreakfast(update):
 	chat_id = update.message.chat.id;
@@ -220,17 +267,7 @@ def checkDinner(update):
 	chat_id = update.message.chat.id
 	first_name = update.message.sender.first_name
 	nick = nickname(first_name)
-
-	resps = [ 
-	"For dinner, " + nick + ", I would recommend a 1972 Chateau de la Père et ses Frères",
-	"Nah, just grab a beer if you get hungry dude.",
-	"If you have chicken, may I suggest a light white Piemontese?",
-	"Dinner? Really?? Isn't it a bit early for dinner mate?",
-	nick +", for you, anything but fish",
-	"I think you should focus on the the Belgo Chmays, " + nick + "!",
-	"Well " + nick +", I've heard the mussels at Belgo are pretty nice."]
-	resp = resps[randint(0, len(resps)-1)]
-	bot.send_message(chat_id, resp).wait()
+	bot.send_message(chat_id, vocab.dinner(nick)).wait()
 
 def checkKbd(update):
 	chat_id = update.message.chat.id
@@ -301,20 +338,19 @@ chat_id = update.message.chat.id;
 
 startupGreeting(update)
 
-
+theMenu = Menu()
+vocab = Phrase()
 
 while(True):
 	try:
-		time.sleep(1)
+		time.sleep(1.1)
 		updates = bot.get_updates(update_id).wait()
 
 		while(updates == []):
-			time.sleep(0.5)
+			time.sleep(1.1)
 			updates = bot.get_updates().wait()
 
 		update = max(updates, key=lambda x:x.update_id)
-
-		print("==>" +  str(len(updates)))
 		update_id = update.update_id + 1;
 
 		if( "gus" in update.message.sender.first_name.lower()):
@@ -373,6 +409,11 @@ while(True):
 		if("belgo" in update.message.text.lower()):
 			checkBelgo(update)
 
+		if("github" in update.message.text.lower() or
+		"source" in update.message.text.lower() or
+		"python" in update.message.text.lower()):
+			checkGithub(update)
+
 		if("shutdown" in update.message.text.lower()):
 			terminate(update)
 
@@ -381,8 +422,7 @@ while(True):
 		sys.exit(1)
 
 	except:
-		e = sys.exc_info()[0]
-		print e
+		traceback.print_exc()
 
 
 
