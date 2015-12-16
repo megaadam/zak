@@ -7,8 +7,9 @@
 from twx.botapi import TelegramBot, ReplyKeyboardMarkup, ReplyMarkup, ForceReply
 import sys
 import time
-from datetime import date
+from datetime import date, datetime
 from random import randint
+from parse import Menu
 
 class Menu:
 	@staticmethod
@@ -31,10 +32,29 @@ def weekday():
 		6: "Sunday"
 		}[wd]
 
+def greeting():
+	hour=datetime.now().hour
+	if(hour<6):
+		greetings = ["Kinda late night", "Dark night", "And you are still awake"]
+	elif(hour<10):
+		greetings = ["Morning", "Happy Morning", "Good Morning"]
+	else:
+		greetings = ["Hello", "Hi", "Ciao", "Hiya", "Greetingz", "Greetings", "Howdy", "¡Hola!", "Hejsan", "Eyy"]
+	
+	if(hour>=18):
+		extraGreetings = ["Evening", "Good evenin'", "Good evening", "Buenas tardes"]
+		greetings.extend(extraGreetings)
+		print greetings
+	return greetings[randint(0, len(greetings)-1)]
+
+def whatsUp():
+	greetings = ["What's up?", "Wozzup", "What's happenin' today?", "Are OK dude?", "Que pasa?", "Great day today!", "", "", "",  "", "Business as usual?"]
+	return greetings[randint(0, len(greetings)-1)]
 
 def startupGreeting(update):
 	chat_id = update.message.chat.id
-	botSpeak = "Hi guys I am now on https://github.com/megaadam/zak\n"
+	botSpeak = "Hi guys! Have you missed me?\n"
+	time.sleep(0.6)
 	botSpeak += "Thank God it's " + weekday() + "! \n"
 	bot.send_message(chat_id, botSpeak).wait()
 
@@ -48,7 +68,7 @@ def checkGus(update):
 		botSpeak = "Tjenare Gustavsson! long time no see."
 		bot.send_message(chat_id, botSpeak).wait()
 
-		botSpeak = "Ask me about meals!"
+		botSpeak = "Ask me about meals, this time it really works! Promise."
 		bot.send_message(chat_id, botSpeak).wait()
 
 hiArturo = False
@@ -61,15 +81,32 @@ def checkArturo(update):
 		botSpeak = "Eyy Arturito! \n Kompis! \nI am sorry man, I will never call you evil agan."
 		bot.send_message(chat_id, botSpeak).wait()
 
-
+hiDiego = False
+hiDiego2 = False
+def checkDiego(update):
+	global hiDiego
+	global hiDiego2
+	chat_id = update.message.chat.id
+	msg = update.message.text
+	if(hiDiego == False):
+		hiDiego=True
+		botSpeak = "¡Buenas Señor Piemonte!\n"
+		botSpeak += "What a pleasure! I believe we have not met before."
+		bot.send_message(chat_id, botSpeak).wait()
+	elif("?" in msg and hiDiego2 == False):
+		botSpeak = "I thought you would wonder."
+		bot.send_message(chat_id, botSpeak).wait()
+		time.sleep(2)
+		botSpeak = "I am actually just a robot. But I can recommend lunch options in Kista."
+		bot.send_message(chat_id, botSpeak).wait()
+		hiDiego2 = True
 
 def nickname(name):
-	global hiGus
 	nicks= {
-	"Arturo": ["Arturo", "Artie", "Arturix", "R2", "artoooo", u"Arturiño", "Diztroyer of Badness", "Destroyer of Badness", "Dooderiño", "Hombre", "Smarturo", "Zapata"],
+	"Arturo": ["Arturo", "Artie", "Arturix", "R2", "artoooo", "Arturiño", "Diztroyer of Badness", "Destroyer of Badness", "Dooderiño", "Hombre", "Smarturo", "Zapata", "Zapatito", "mi amor"],
 	"Gustav": ["Gustav", "Gus", "Gustavo", "Gus doood", "Gee One", "dude", "Mister", "Gus-man"],
-	"Adamski": ["Adamski", "Adam", "Adamito", "Hungarian dude", "dood", "Mister", "Adamsson"],
-	"Diego": ["Diego", "D1", "Diegs", "Diegito"]
+	"Adamski": ["Adamski", "Adam", "Adamito", "Hungarian dude", "dood", "Mister", "Adamsson", "Adamiño"],
+	"Diego": ["Diego", "D1", "Diegs", "Diegito", "Señor"]
 	}
 
 	if(name in nicks):
@@ -79,10 +116,20 @@ def nickname(name):
 	else:
 		return name
 
+def checkZack(update):
+	chat_id = update.message.chat.id
+	first_name = update.message.sender.first_name
+	botSpeak = "Listen "+ nickname(first_name) + "."
+	bot.send_message(chat_id, botSpeak).wait()
+	time.sleep(0.6)
+	corrections = ["My name is Zak.", "You should know my name by now, it's: Zak", "The name is Zak, buddy.", "Don't you ever forget, they call me Zak."]
+	botSpeak = corrections[randint(0, len(corrections)-1)]
+	bot.send_message(chat_id, botSpeak).wait()
+
 def checkZak(update):
 	chat_id = update.message.chat.id
 	first_name = update.message.sender.first_name
-	botSpeak = "Howdy " + nickname(first_name) + ", what's up?"
+	botSpeak = greeting() + " " + nickname(first_name) + "! " + whatsUp()
 	bot.send_message(chat_id, botSpeak).wait()
 
 def checkFridge(update):
@@ -185,8 +232,6 @@ def checkDinner(update):
 	resp = resps[randint(0, len(resps)-1)]
 	bot.send_message(chat_id, resp).wait()
 
-
-
 def checkKbd(update):
 	chat_id = update.message.chat.id
 	kbd = [["Ericofood"], ["Helgafjall"], ["Victoria"]]
@@ -243,7 +288,7 @@ print(botUser)
 
 updates = bot.get_updates().wait()
 while(updates == []):
-	time.sleep(0.5)
+	time.sleep(1.5)
 	updates = bot.get_updates().wait()
 
 for update in updates:
@@ -278,10 +323,27 @@ while(True):
 		if( "arturo" in update.message.sender.first_name.lower()):
 			checkArturo(update);
 
+		if( "diego" in update.message.sender.first_name.lower()):
+			checkDiego(update);
+
 		if( "lunch" in update.message.text.lower() ):
 			checkLunch(update)
 
-		if("zak" in update.message.text.lower() ):
+		if("zack" in update.message.text.lower() or
+		"zakk" in update.message.text.lower() or
+		"za!k" in update.message.text.lower() or
+		"z!ak" in update.message.text.lower() or
+		"za?k" in update.message.text.lower() or
+		"z?ak" in update.message.text.lower()):
+			checkZack(update)
+		elif("zak" in update.message.text.lower() or
+		"hi" in update.message.text.lower() or
+		"hello" in update.message.text.lower() or
+		"hej" in update.message.text.lower() or
+		"howdy" in update.message.text.lower() or
+		"hey" in update.message.text.lower() or
+		"hello" in update.message.text.lower() or
+		"hola" in update.message.text.lower()):
 			checkZak(update)
 
 		if("fridge" in update.message.text.lower() ):
@@ -301,7 +363,6 @@ while(True):
 
 		if("desay" in update.message.text.lower()):
 			checkBreakfast(update)
-
 
 		if("dinner" in update.message.text.lower()):
 			checkDinner(update)

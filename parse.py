@@ -1,14 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from twx.botapi import TelegramBot, ReplyKeyboardMarkup, ReplyMarkup, ForceReply
 import sys
-import time
 import requests
-from StringIO import StringIO
-import os,sys
 import HTMLParser
-#import Image
-
+from random import randint
 
 class FoodParser(HTMLParser.HTMLParser):
 	def __init__(self):
@@ -26,6 +21,7 @@ class FoodParser(HTMLParser.HTMLParser):
 		if(tag=="pre"):
 			self.in_pre = True
 
+
 	def handle_endtag(self, tag):
 		if(tag=="h3"):
 			self.in_h3 = False
@@ -35,48 +31,72 @@ class FoodParser(HTMLParser.HTMLParser):
 
 	def handle_data(self, data):
 		if self.in_h3:
-			print(data + " =====================================" )
-			if(self.restaurant != ""):
-				self.menu[self.restaurant] = self.foodlist
 			self.restaurant = data
-			self.foodlist = []
 
 		if(self.in_pre):
-			print(":::::::::::::" + data)
-			self.foodlist.append(data)	
-			#self.foodlist = data.split("\n")			
-try:
-	url = "https://wcdma-userarea.rnd.ki.sw.ericsson.se/ezivkoc/lunch.php"
-	url = "http://dummy" # uncomment for non ECN test
-	req = requests.get(url)
+			self.menu[self.restaurant] = data.split('\n')
 
-	req.encoding = 'utf-8'
-	htmlText = req.text
-	print req.encoding
-	print htmlText
+class Menu:
+	def __init__(self):
+		self.url = "https://wcdma-userarea.rnd.ki.sw.ericsson.se/ezivkoc/lunch.php"
+		self.localmode = False
+		self.retrieveMenu()
+		self.ignorelist=["Boscherian"]
 
-except requests.exceptions.ConnectionError:
-	print "ConnectionError, failed to access https://wcdma-userarea.rnd.ki.sw.ericsson.se/ezivkoc/lunch.php"
-	print "Will read menus from December 10 locally."
-	htmlText = open("res/menus.html", "r").read()
-	htmlText = str(htmlText)	
+	def retrieveMenu(self):				
+		try:
+			
+			#self.url = "http://dummy" # uncomment for non ECN test
+			req = requests.get(self.url)
 
-except:
-	print " ===> other exception"
-	e = sys.exc_info()[0]
-	print e
+			req.encoding = 'utf-8'
+			htmlText = req.text
+			print req.encoding
+			print htmlText
 
-#print(textEncode)
+		except requests.exceptions.ConnectionError:
+			self.localmode = True
+			print "Invoking local mode"
+			htmlText = open("res/menus.html", "r").read()
+			htmlText = str(htmlText)	
 
-parser = FoodParser()
-parser.feed(htmlText)
-parser.close()
-print("++++++++")
-menu = parser.menu
-for rest in menu:
-	print "==============="
-	print rest 
-	for food in menu[rest]:
-		print "-------" + food
+		except:
+			print " ===> other exception"
+			e = sys.exc_info()[0]
+			print e
+
+		parser = FoodParser()
+		parser.feed(htmlText)
+		parser.close()
+		print("++++++++")
+		self.menu = parser.menu
+
+	def getMenu(self):	
+		return self.menu
+
+	def rndRest(self):
+		while True:
+			rest = self.menu.keys()[randint(0, len(self.menu)-1)]
+			if rest not in self.ignorelist:
+				break
+		return rest
+
+	def rndFood(self, rest):
+		if rest not in self.menu.keys():
+			return ""
+
+		foodz = self.menu[rest]
+		if len(foodz) == 0:
+			return ""
+
+		return foodz[randint(0, len(foodz)-1)]	
+
+	def getLocalmode(self):
+		return self.localmode
+
+	def getUrl(self):
+		return self.url
+
+
 
 
