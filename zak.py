@@ -8,7 +8,7 @@ from twx.botapi import TelegramBot, ReplyKeyboardMarkup, ReplyMarkup, ForceReply
 import sys, traceback
 import time
 from datetime import date, datetime
-from random import randint
+from random import randint, shuffle
 
 
 from parse import Menu
@@ -42,7 +42,7 @@ def greeting():
 	return greetings[randint(0, len(greetings)-1)]
 
 def whatsUp():
-	greetings = ["What's up?", "Wozzup", "What's happenin' today?", "Are OK dude?", "Que pasa?", "Great day today!", "", "", "",  "", "Business as usual?"]
+	greetings = ["What's up?", "Wozzup", "What's happenin' today?", "Are OK dude?", "¿Que pasa?", "Great day today!", "", "", "",  "", "Business as usual?"]
 	return greetings[randint(0, len(greetings)-1)]
 
 def startupGreeting(update):
@@ -94,6 +94,14 @@ def checkDiego(update):
 		botSpeak = "I am actually just a robot. But I can recommend lunch options in Kista."
 		bot.send_message(chat_id, botSpeak).wait()
 		hiDiego2 = True
+
+def checkSwedish(update):
+	chat_id = update.message.chat.id
+	msg = update.message.text
+	nick = nickname(update.message.sender.first_name)
+	botSpeak = vocab.swedish(nick)
+	bot.send_message(chat_id, botSpeak).wait()
+
 
 def checkGithub(update):
 	chat_id = update.message.chat.id
@@ -197,10 +205,6 @@ def genericLunch(update):
 	rest = theMenu.rndRest()
 	food = theMenu.rndFood(rest)
 
-	# Needs test online/offline !!
-	rest = rest.decode('latin1')
-	food = food.decode('latin1')
-
 	botSpeak = "Today I would avoid " + rest + " and their tastless " + food + "."
 	print botSpeak
 	bot.send_message(chat_id, botSpeak).wait()
@@ -208,9 +212,6 @@ def genericLunch(update):
 	rest = theMenu.rndRest()
 	food = theMenu.rndFood(rest)
 
-	# Needs test online/offline !!
-	rest = rest.decode('latin1')
-	food = food.decode('latin1')
 	botSpeak = "But you could try the interesting " + food + " at " + rest + "."
 	print botSpeak
 	bot.send_message(chat_id, botSpeak).wait()
@@ -242,25 +243,26 @@ def checkLunch(update):
 		return
 
 	if(hour < 18):
-		botSpeak = "No such thing as a free lunch " + nick + "."
+		botSpeak = "No such thing as a free lunch " + nick + ". Too late anyway."
 		bot.send_message(chat_id, botSpeak).wait()
 		return
 
 	botSpeak = "At this hour, " + nick + "... I would rather recommend dinner."
 	bot.send_message(chat_id, botSpeak).wait()
 
-
+def checkRestaurants(update):
+	chat_id = update.message.chat.id;
+	nick = nickname(update.message.sender.first_name)
+	r = theMenu.getRestaurants()
+	shuffle(r)
+	botSpeak = vocab.restaurants(nick, r)
+	bot.send_message(chat_id, botSpeak).wait()
 
 def checkBreakfast(update):
 	chat_id = update.message.chat.id;
-	resps = [ 
-	"I'm not much for breakfast. I like to sleep instead.",
-	"Not my kind of thing, dude.",
-	"Breakfast? You gotta be kidding!",
-	"Nah, breakfast is for idiots, I eat CPU cycles.",
-	"Just black coffe, thank you."]
-	resp = resps[randint(0, len(resps)-1)]
-	bot.send_message(chat_id, resp).wait()
+	nick = nickname(update.message.sender.first_name)
+	botSpeak = vocab.breakfast(nick)
+	bot.send_message(chat_id, botSpeak).wait()
 
 
 def checkDinner(update):
@@ -353,68 +355,91 @@ while(True):
 		update = max(updates, key=lambda x:x.update_id)
 		update_id = update.update_id + 1;
 
-		if( "gus" in update.message.sender.first_name.lower()):
-			checkGus(update);
+		msgTxt = update.message.text.lower()
+		msgTokens = msgTxt.split(u'\s,;.:!?¡¿+-*/="\'\\')
+		msgSender = update.message.sender.first_name.lower()
 
-		if( "arturo" in update.message.sender.first_name.lower()):
-			checkArturo(update);
+		# special first
+		if("restaurang" in msgTxt or
+		u"å" in msgTxt or	
+		u"ä" in msgTxt or	
+		u"ö" in msgTxt or	
+		"fruko" in msgTxt or	
+		"jatte" in msgTxt or	
+		"tack" in msgTxt or	
+		"hej" in msgTokens	or
+		"bra" in msgTokens):
+			checkSwedish(update)
 
-		if( "diego" in update.message.sender.first_name.lower()):
-			checkDiego(update);
+		# dudes
+		if( "gus" in msgSender):
+			checkGus(update)
 
-		if( "lunch" in update.message.text.lower() ):
-			checkLunch(update)
+		if( "arturo" in msgSender):
+			checkArturo(update)
 
-		if("zack" in update.message.text.lower() or
-		"zakk" in update.message.text.lower() or
-		"za!k" in update.message.text.lower() or
-		"z!ak" in update.message.text.lower() or
-		"za?k" in update.message.text.lower() or
-		"z?ak" in update.message.text.lower()):
+		if( "diego" in msgSender):
+			checkDiego(update)
+
+		# Greetings
+		if("zack" in msgTxt or
+		"zakk" in msgTxt or
+		"za!k" in msgTxt or
+		"z!ak" in msgTxt or
+		"za?k" in msgTxt or
+		"z?ak" in msgTxt):
 			checkZack(update)
-		elif("zak" in update.message.text.lower() or
-		"hi" in update.message.text.lower() or
-		"hello" in update.message.text.lower() or
-		"hej" in update.message.text.lower() or
-		"howdy" in update.message.text.lower() or
-		"hey" in update.message.text.lower() or
-		"hello" in update.message.text.lower() or
-		"hola" in update.message.text.lower()):
+		elif("zak" in msgTokens or
+		"hi" in msgTokens or
+		"hello" in msgTokens or
+		"hej" in msgTokens or
+		"howdy" in msgTokens or
+		"hey" in msgTokens or
+		"hello" in msgTokens or
+		"hola" in msgTokens):
 			checkZak(update)
 
-		if("fridge" in update.message.text.lower() ):
+
+		# fragments
+		if( "lunch" in msgTxt ):
+			checkLunch(update)
+
+		if("resta" in msgTxt):
+			checkRestaurants(update)
+
+		if("fridge" in msgTxt ):
 			checkFridge(update)
 
-		if("morning" in update.message.text.lower()):
+		if("breakf" in msgTxt):
+			checkBreakfast(update)
+
+		if("fruko" in msgTxt):
+			checkBreakfast(update)
+
+		if("petit" in msgTxt):
+			checkBreakfast(update)
+
+		if("desay" in msgTxt):
+			checkBreakfast(update)
+		if("morning" in msgTokens):
 			checkMorning(update)
 
-		if("breakf" in update.message.text.lower()):
-			checkBreakfast(update)
-
-		if("fruko" in update.message.text.lower()):
-			checkBreakfast(update)
-
-		if("petit" in update.message.text.lower()):
-			checkBreakfast(update)
-
-		if("desay" in update.message.text.lower()):
-			checkBreakfast(update)
-
-		if("dinner" in update.message.text.lower()):
-			checkDinner(update)
-
-		if("toc" in update.message.text.lower()):
-			checkToc(update)
-
-		if("belgo" in update.message.text.lower()):
+		if("belgo" in msgTxt):
 			checkBelgo(update)
 
-		if("github" in update.message.text.lower() or
-		"source" in update.message.text.lower() or
-		"python" in update.message.text.lower()):
+		if("github" in msgTxt or
+		"source" in msgTxt or
+		"python" in msgTxt):
 			checkGithub(update)
 
-		if("shutdown" in update.message.text.lower()):
+		# words
+		if("dinner" in msgTokens):
+			checkDinner(update)
+
+		if("toc" in msgTokens):
+			checkToc(update)
+
+		if("shutdown" in msgTokens):
 			terminate(update)
 
 	except (KeyboardInterrupt, SystemExit):

@@ -58,7 +58,7 @@ class Menu:
 			self.localmode = True
 			print "Invoking local mode"
 			htmlText = open("res/menus.html", "r").read()
-			htmlText = str(htmlText)	
+			htmlText = htmlText.decode('latin1')
 
 		except:
 			print " ===> other exception"
@@ -90,6 +90,10 @@ class Menu:
 			return ""
 
 		return foodz[randint(0, len(foodz)-1)]	
+
+	def getRestaurants(self):
+		rest = self.menu.keys()
+		return rest
 
 	def getLocalmode(self):
 		return self.localmode
