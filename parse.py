@@ -74,28 +74,13 @@ class Menu:
 	def getMenu(self):	
 		return self.menu
 
-	def rndRest(self):
-		while True:
-			rest = self.menu.keys()[randint(0, len(self.menu)-1)]
-			if rest not in self.ignorelist:
-				break
-		return rest
-
-	def rndFood(self, rest):
-		if rest not in self.menu.keys():
-			return ""
-
-		foodz = self.menu[rest]
-		if len(foodz) == 0:
-			return ""
-
-		return foodz[randint(0, len(foodz)-1)]	
-
 	def getRestaurants(self):
-		rest = self.menu.keys()
-		return rest
+		return self.menu.keys()
 
-	def getLocalmode(self):
+	def getFoods(self, rest):
+		return self.menu[rest]
+
+	def getLocalMode(self):
 		return self.localmode
 
 	def getUrl(self):

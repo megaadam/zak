@@ -123,13 +123,13 @@ def nickname(name):
 	return vocab.nickname(name)
 
 def checkZack(update):
-	chat_id = update.message.chat.id
-	first_name = update.message.sender.first_name
-	botSpeak = "Listen "+ nickname(first_name) + "."
+	chat_id = update.message.chat.id;
+	nick = nickname(update.message.sender.first_name)
+	botSpeak = vocab.getZack1(nick)
+
 	bot.send_message(chat_id, botSpeak).wait()
 	time.sleep(0.6)
-	corrections = ["My name is Zak.", "You should know my name by now, it's: Zak", "The name is Zak, buddy.", "Don't you ever forget, they call me Zak."]
-	botSpeak = corrections[randint(0, len(corrections)-1)]
+	botSpeak = vocab.getZack2(nick)
 	bot.send_message(chat_id, botSpeak).wait()
 
 def checkZak(update):
@@ -198,20 +198,25 @@ def sendImageFromUrl(chat_id, url):
 
 def genericLunch(update):
 	chat_id = update.message.chat.id;
-	nick = nickname(update.message.sender.first_name);
+	name = update.message.sender.first_name
+	nick = nickname(name)
 	botSpeak = "Well " + nick + ", I guess you're hungry! Let me check."
 	bot.send_message(chat_id, botSpeak).wait()
 
-	rest = theMenu.rndRest()
-	food = theMenu.rndFood(rest)
+	if(theMenu.getLocalMode() == True):
+		botSpeak = "[Sorry, offline mode :( demo menus from December 10]\n"
+	else:
+		botSpeak =""
 
-	botSpeak = "Today I would avoid " + rest + " and their tastless " + food + "."
+	rest = vocab.rnd(theMenu.getRestaurants())
+	food = vocab.rnd(theMenu.getFoods(rest))
+
+	botSpeak += "Today I would avoid " + rest + " and their tasteless " + food + "."
 	print botSpeak
 	bot.send_message(chat_id, botSpeak).wait()
 
-	rest = theMenu.rndRest()
-	food = theMenu.rndFood(rest)
-
+	rest = vocab.rnd(theMenu.getRestaurants())
+	food = vocab.rnd(theMenu.getFoods(rest))
 	botSpeak = "But you could try the interesting " + food + " at " + rest + "."
 	print botSpeak
 	bot.send_message(chat_id, botSpeak).wait()
@@ -264,6 +269,11 @@ def checkBreakfast(update):
 	botSpeak = vocab.breakfast(nick)
 	bot.send_message(chat_id, botSpeak).wait()
 
+def checkGlaze(update):
+	chat_id = update.message.chat.id;
+	nick = nickname(update.message.sender.first_name)
+	botSpeak = vocab.getGlaze(nick)
+	bot.send_message(chat_id, botSpeak).wait()
 
 def checkDinner(update):
 	chat_id = update.message.chat.id
@@ -276,7 +286,6 @@ def checkKbd(update):
 	kbd = [["Ericofood"], ["Helgafjall"], ["Victoria"]]
 	reply_markup = ReplyKeyboardMarkup.create(kbd)
 	bot.send_message(chat_id, "Testing keyboard.", reply_markup = reply_markup).wait()
-
 
 def terminate(update):
 	chat_id = update.message.chat.id
@@ -384,6 +393,7 @@ while(True):
 		# Greetings
 		if("zack" in msgTxt or
 		"zakk" in msgTxt or
+		"zok" in msgTxt or
 		"za!k" in msgTxt or
 		"z!ak" in msgTxt or
 		"za?k" in msgTxt or
@@ -433,6 +443,9 @@ while(True):
 			checkGithub(update)
 
 		# words
+		if("glaze" in msgTokens):
+			checkGlaze(update)
+
 		if("dinner" in msgTokens):
 			checkDinner(update)
 

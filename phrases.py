@@ -15,7 +15,7 @@ class Phrase:
 
 		self.dinners = [ 
 		"For dinner, #nick#, I would recommend a 1972 Chateau de la Père et ses Frères",
-		"Forget dinner #nick#!! Have a tripple Carolina instead."
+		"Forget dinner #nick#!! Have a tripple Carolina instead.",
 		"Nah, just grab a beer if you get hungry dude.",
 		"If you have chicken, may I suggest a light white Piemontese?",
 		"Dinner? Really?? Isn't it a bit early for dinner mate?",
@@ -33,7 +33,7 @@ class Phrase:
 
 		self.sweResp = ["Sorry, my Swedish is not so good. But I can reply...", 
 		u"Orrschakta, minn svanske er jette gansk dålig? ",
-		"Is that Swedish? I know noothing. I come from Barcelona."
+		"Is that Swedish? I know noothing. I come from Barcelona.",
 		"Sorry buddy, no habla sueco!",
 		"Would you please speak English, Sir?",
 		"How many languages dya think I speak #nick#?"
@@ -47,6 +47,20 @@ class Phrase:
 		"Nah, breakfast is for idiots, I eat CPU cycles.",
 		"Just black coffe, thank you."]
 
+		self.glaze = [
+		"I agree #nick# that's the best place in Kista. Too bad they don't post their menus.",
+		"I was human I would go to Glaze every day!",
+		"Glaze is not to bad I guess, for a restaurant in a dump like Kista...",
+		"I wish there were more places like Glaze, sorry but I cannot read their menus."]
+
+		self.zack1 = [
+		"Listen #nick#.",
+		"#nick#..."]
+
+		self.zack2 =  ["My name is Zak.", "You should know my name by now, it's: Zak",
+		"The name is Zak, buddy.", "Don't you ever forget, they call me Zak."]
+
+
 		self.helga = [
 		u"Helgafjäll", "Refactory", "reefactoree", "Un-fac-tory", "Unfactory", "Helga"]
 
@@ -59,27 +73,21 @@ class Phrase:
 		if(len(phrases) < 1):
 			return ""
 
-#		if(phrases not in self.phraseHistory):
-#			shuffle(phrases)
-#			i = randint(0, len(phrases)-1)
-#		else:
-#			i = (self.phraseHistory[phrases] + 1) % len(phrases)
-
-		i = randint(0, len(phrases)-1)
-		#self.phraseHistory[phrases] = i
-		return phrases[i]
-
-	def rndExcept(self, phrases, phrase):
-		if(len(phrases) < 1):
-			return ""
-
-		if(len(phrases) == 1):
+		if(len(phrases)==1):
 			return phrases[0]
 
-		while(True):
-			r = rnd()
-			if(r != phrase):
-				return r
+		key = phrases[0]
+
+		if(key not in self.phraseHistory):
+			i = randint(0, len(phrases)-1)
+		else:
+			while(True):
+				i = randint(0, len(phrases)-1)			
+				if i != self.phraseHistory[key]:
+					break
+
+		self.phraseHistory[key] = i
+		return phrases[i]
 			
 	def fixAlias(self, phrase):
 		resp = phrase
@@ -97,9 +105,24 @@ class Phrase:
 		else:
 			return name
 
+########################################################################################
+##	the vocab
+	def getZack1(self, nick):
+		self.nick = nick
+		return self.fixAlias(self.rnd(self.zack1))
+
+	def getZack2(self, nick):
+		self.nick = nick
+		return self.fixAlias(self.rnd(self.zack2))
+
+
 	def dinner(self, nick):
 		self.nick = nick
 		return self.fixAlias(self.rnd(self.dinners))
+
+	def getGlaze(self, nick):
+		self.nick = nick
+		return self.fixAlias(self.rnd(self.glaze))
 
 	def swedish(self, nick):
 		self.nick = nick
