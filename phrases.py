@@ -1,17 +1,38 @@
 # -*- coding: utf-8 -*-
 
 from random import randint, shuffle
+from util import T, Msg
 
 class Phrase:
 	def __init__(self):
 
 		self.phraseHistory = {}
-		self.nicks= {
+		self.nicks = {
 		"Arturo": ["Arturo", "Artie", "Arturix", "R2", "artoooo", u"Arturiño", "Diztroyer of Badness", "Destroyer of Badness", u"Dooderiño", "Hombre", "Smarturo", "Zapata", "Zapatito", "mi amor"],
 		"Gustav": ["Gustav", "Gus", "Gustavo", "Gus doood", "Gee One", "dude", "Mister", "Gus-man"],
 		"Adamski": ["Adamski", "Adam", "Adamito", "Hungarian dude", "dood", "Mister", "Adamsson", u"Adamiño"],
 		"Diego": ["Diego", "D1", "Diegs", "Diegito", u"Señor"] # Diego is the only true Señor
 		}
+
+		self.greeting1 =[
+		"Hi #nick# and everybody",
+		"Doodz! Really awesome to see you!!",
+		"Greetings friends. Is it really #weekday# already?",
+		"#nick# man! Are you happy that it's #weekday#?"]
+
+		self.greeting2 = [
+		"sup?",
+		"What's going on over there?",
+		"you OK?",
+		"What else is new?",
+		"Any news?",
+		"So who is leaving HSS this week then?"]
+
+		self.hiArturo = [
+		u"Eyy muchaco! ¿Que Pasa?",
+		"Hi #nick#! \nHowz Madrid?\nCold in December eh?",
+		"Hey! Are you still in Madrid?",
+		"toc toc"]
 
 		self.dinners = [ 
 		"For dinner, #nick#, I would recommend a 1972 Chateau de la Père et ses Frères",
@@ -47,6 +68,12 @@ class Phrase:
 		"Nah, breakfast is for idiots, I eat CPU cycles.",
 		"Just black coffe, thank you."]
 
+		self.artLunch = [
+		"I though you were in Spain #nick#, why dontcha ask your mum?",
+		"You could ask your mother to cook for you #nick#. She is in the next room isn't she?",
+		"Ah these Peruvian dudes! If you are in Barcelo\nsorry Madrid\nyou COULD ask your mummy, yeah?",
+		"I cant help you.\nYou are in Madrid."]
+
 		self.glaze = [
 		"I agree #nick# that's the best place in Kista. Too bad they don't post their menus.",
 		"I was human I would go to Glaze every day!",
@@ -77,24 +104,36 @@ class Phrase:
 			return phrases[0]
 
 		key = phrases[0]
-
 		if(key not in self.phraseHistory):
 			i = randint(0, len(phrases)-1)
 		else:
 			while(True):
-				i = randint(0, len(phrases)-1)			
+				i = randint(0, len(phrases)-1)	
 				if i != self.phraseHistory[key]:
 					break
 
 		self.phraseHistory[key] = i
 		return phrases[i]
 			
-	def fixAlias(self, phrase):
+	def fixAliasOld(self, phrase):
 		resp = phrase
 		resp = resp.replace(u"#nick#", self.nick)
 		hel = self.rnd(self.helga)
-		print hel
 		resp = resp.replace(u"Helgafjäll", hel)
+		return resp
+
+	def fixAlias(self, phrase, msg):
+		resp = phrase
+		if(msg.nick == ""):
+			# No override use defaults
+			nick = self.nickname(msg.sender)
+		else:
+			nick = msg.nick
+
+		helgaNick = self.rnd(self.helga)
+		resp = resp.replace(u"#nick#", nick)
+		resp = resp.replace(u"#weekday#", T.weekday())
+		resp = resp.replace(u"Helgafjäll", helgaNick)
 		return resp
 
 	def nickname(self, name):
@@ -107,39 +146,52 @@ class Phrase:
 
 ########################################################################################
 ##	the vocab
+	def getGreeting1(self, msg):
+		return self.fixAlias(self.rnd(self.greeting1), msg)
+
+	def getGreeting2(self, msg):
+		return self.fixAlias(self.rnd(self.greeting2), msg)
+
+	def getHiArturo(self, msg):
+		return self.fixAlias(self.rnd(self.hiArturo), msg)
+
 	def getZack1(self, nick):
 		self.nick = nick
-		return self.fixAlias(self.rnd(self.zack1))
+		return self.fixAliasOld(self.rnd(self.zack1))
 
 	def getZack2(self, nick):
 		self.nick = nick
-		return self.fixAlias(self.rnd(self.zack2))
+		return self.fixAliasOld(self.rnd(self.zack2))
 
+	def getArtLunch(self, msg):
+		self.nick = self.nickname(msg.sender)
+		print self.nick
+		return self.fixAliasOld(self.rnd(self.artLunch))
 
 	def dinner(self, nick):
 		self.nick = nick
-		return self.fixAlias(self.rnd(self.dinners))
+		return self.fixAliasOld(self.rnd(self.dinners))
 
 	def getGlaze(self, nick):
 		self.nick = nick
-		return self.fixAlias(self.rnd(self.glaze))
+		return self.fixAliasOld(self.rnd(self.glaze))
 
 	def swedish(self, nick):
 		self.nick = nick
 		resp = self.rnd(self.sweResp)
-		resp = self.fixAlias(resp)
+		resp = self.fixAliasOld(resp)
 		return resp
 
 	def breakfast(self, nick):
 		self.nick = nick
 		resp = self.rnd(self.breakf)
-		resp = self.fixAlias(resp)
+		resp = self.fixAliasOld(resp)
 		return resp
 
 	def restaurants(self, nick, r):
 		self.nick = nick
 		if len(r) < 1:
-			return self.fixAlias("Restaurant databaze error, sorry #nick#.")
+			return self.fixAliasOld("Restaurant databaze error, sorry #nick#.")
 		resp = self.rnd(self.restIntro)
 		for i in range(len(r)-2):
 			resp += r[i]
@@ -149,6 +201,6 @@ class Phrase:
 		resp += self.rnd(self.restAnd)
 		resp += r[len(r)-1]
 		resp += "."
-		resp = self.fixAlias(resp)
+		resp = self.fixAliasOld(resp)
 		return resp
 

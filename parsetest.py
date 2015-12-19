@@ -1,6 +1,19 @@
+# -*- coding: utf-8 -*-
+
+
 from parse import Menu
 from phrases import Phrase
 from datetime import datetime
+from random import randint, shuffle
+import re
+import sys
+
+msgTxt = 'toc toc,ton?ton!tic;tac.tix\ntox+tox¿tox-tox*tox/toz=tiz'
+#msgTokens = re.split(' |,|;|.|:|!|?|¡|¿|+|-|*|/|=|"|\\', msgTxt)
+tokens = re.split(',|;|!|\?|\.|\+|-|\*|/|=|¿|\s', msgTxt)
+for t in tokens:
+	print t
+sys.exit(0)
 
 m = Menu()
 p = Phrase()

@@ -7,35 +7,23 @@
 from twx.botapi import TelegramBot, ReplyKeyboardMarkup, ReplyMarkup, ForceReply
 import sys, traceback
 import time
-from datetime import date, datetime
 from random import randint, shuffle
+import re
 
 
 from parse import Menu
 from phrases import Phrase
-
-def weekday():
-	wd=date.today().weekday()
-	return {	
-		0: "Monday",
-		1: "Tuesday",
-		2: "Wednesday",
-		3: "Thursday, and cocktails tonite",
-		4: "Friday at last!",
-		5: "Saturday",
-		6: "Sunday"
-		}[wd]
+from util import T, Msg
 
 def greeting():
-	hour=datetime.now().hour
-	if(hour<6):
+	if(T.hour()<6):
 		greetings = ["Kinda late night", "Dark night", "And you are still awake"]
-	elif(hour<10):
+	elif(T.hour()<10):
 		greetings = ["Morning", "Happy Morning", "Good Morning"]
 	else:
 		greetings = ["Hello", "Hi", "Ciao", "Hiya", "Greetingz", "Greetings", "Howdy", "¡Hola!", "Hejsan", "Eyy"]
 	
-	if(hour>=18):
+	if(T.hour()>=18):
 		extraGreetings = ["Evening", "Good evenin'", "Good evening", "Buenas tardes"]
 		greetings.extend(extraGreetings)
 		print greetings
@@ -45,11 +33,12 @@ def whatsUp():
 	greetings = ["What's up?", "Wozzup", "What's happenin' today?", "Are OK dude?", "¿Que pasa?", "Great day today!", "", "", "",  "", "Business as usual?"]
 	return greetings[randint(0, len(greetings)-1)]
 
-def startupGreeting(update):
-	chat_id = update.message.chat.id
-	botSpeak = "Hi guys! Have you missed me?\n"
-	time.sleep(0.6)
-	botSpeak += "Thank God it's " + weekday() + "! \n"
+def startupGreeting(msg):
+	botSpeak = vocab.getGreeting1(msg)
+	bot.send_message(chat_id, botSpeak).wait()
+
+	time.sleep(1.5)
+	botSpeak = vocab.getGreeting2(msg)
 	bot.send_message(chat_id, botSpeak).wait()
 
 hiGus = False
@@ -66,14 +55,13 @@ def checkGus(update):
 		bot.send_message(chat_id, botSpeak).wait()
 
 hiArturo = False
-def checkArturo(update):
+def checkArturo(msg):
 	global hiArturo
-	chat_id = update.message.chat.id
 
 	if(hiArturo == False):
 		hiArturo=True
-		botSpeak = "Eyy Arturito! \n Kompis! \nI am sorry man, I will never call you evil again."
-		bot.send_message(chat_id, botSpeak).wait()
+		botSpeak = vocab.getHiArturo(msg)
+		bot.send_message(msg.chatId, botSpeak).wait()
 
 hiDiego = False
 hiDiego2 = False
@@ -155,7 +143,7 @@ def checkFridge(update):
 def checkMorning(update):
 	chat_id = update.message.chat.id
 	first_name = update.message.sender.first_name
-	botSpeak = "Good morning " + nickname(first_name) + ", thank God it's " + weekday() + "!"
+	botSpeak = "Good morning " + nickname(first_name) + ", thank God it's " + T.weekday() + "!"
 	bot.send_message(chat_id, botSpeak).wait()
 
 def checkToc(update):
@@ -196,12 +184,11 @@ def sendImageFromUrl(chat_id, url):
         ('photo', 'image.jpg', output.getvalue()),
     ])
 
-def genericLunch(update):
-	chat_id = update.message.chat.id;
-	name = update.message.sender.first_name
+def genericLunch(msg):
+	name = msg.sender
 	nick = nickname(name)
 	botSpeak = "Well " + nick + ", I guess you're hungry! Let me check."
-	bot.send_message(chat_id, botSpeak).wait()
+	bot.send_message(msg.chatId, botSpeak).wait()
 
 	if(theMenu.getLocalMode() == True):
 		botSpeak = "[Sorry, offline mode :( demo menus from December 10]\n"
@@ -213,47 +200,48 @@ def genericLunch(update):
 
 	botSpeak += "Today I would avoid " + rest + " and their tasteless " + food + "."
 	print botSpeak
-	bot.send_message(chat_id, botSpeak).wait()
+	bot.send_message(msg.chatId, botSpeak).wait()
 
 	rest = vocab.rnd(theMenu.getRestaurants())
 	food = vocab.rnd(theMenu.getFoods(rest))
 	botSpeak = "But you could try the interesting " + food + " at " + rest + "."
 	print botSpeak
-	bot.send_message(chat_id, botSpeak).wait()
+	bot.send_message(msg.chatId, botSpeak).wait()
 
-def checkLunch(update):
-	chat_id = update.message.chat.id;
-	nick = nickname(update.message.sender.first_name);
+def checkLunch(msg):
+	nick = nickname(msg.sender)
 
-	if(date.today().weekday() > 4):
-		botSpeak = nick + " get real! The restaurants are closed on " + weekday() + "s"
-		bot.send_message(chat_id, botSpeak).wait()
-		return
-
-	hour = datetime.now().hour
-	hour = 12
-	print "LUNCH HOUR !!!!!!"
-	if(hour < 6):
+	if(T.hour() < 6):
 		botSpeak = nick + "! Don't be ridiculous. This is not the time for lunch, and you should be asleep."
-		bot.send_message(chat_id, botSpeak).wait()
+		bot.send_message(msg.chatId, botSpeak).wait()
 		return
 
-	if(hour < 10):
+	if(msg.sender == "arturo"):
+		botSpeak = vocab.getArtLunch(msg)
+		bot.send_message(msg.chatId, botSpeak).wait()
+		return
+
+	if(T.weekend()):
+		botSpeak = nick + " get real! The Kista restaurants are closed on " + T.weekday() + "s"
+		bot.send_message(msg.chatId, botSpeak).wait()
+		return
+
+	if(T.hour() < 10):
 		botSpeak = "I think it's a bit early for lunch. Ask me after 10 again."
-		bot.send_message(chat_id, botSpeak).wait()
+		bot.send_message(msg.chatId, botSpeak).wait()
 		return
 
-	if(hour < 14):
-		genericLunch(update)
+	if(T.hour() < 14):
+		genericLunch(msg)
 		return
 
-	if(hour < 18):
+	if(T.hour() < 18):
 		botSpeak = "No such thing as a free lunch " + nick + ". Too late anyway."
-		bot.send_message(chat_id, botSpeak).wait()
+		bot.send_message(msg.chatId, botSpeak).wait()
 		return
 
 	botSpeak = "At this hour, " + nick + "... I would rather recommend dinner."
-	bot.send_message(chat_id, botSpeak).wait()
+	bot.send_message(msg.chatId, botSpeak).wait()
 
 def checkRestaurants(update):
 	chat_id = update.message.chat.id;
@@ -345,12 +333,19 @@ for update in updates:
 update_id = update.update_id + 1;
 
 
-chat_id = update.message.chat.id;
-
-startupGreeting(update)
 
 theMenu = Menu()
 vocab = Phrase()
+
+chat_id = update.message.chat.id
+msgTxt = update.message.text.lower()
+msgTokens = msgTxt.split(u'\s,;.:!?¡¿+-*/="\'\\')
+msgSender = update.message.sender.first_name.lower()
+msg = Msg(chat_id, msgTxt, msgTokens, msgSender)
+print msg.sender
+print update
+startupGreeting(msg)
+
 
 while(True):
 	try:
@@ -364,9 +359,12 @@ while(True):
 		update = max(updates, key=lambda x:x.update_id)
 		update_id = update.update_id + 1;
 
+		chat_id = update.message.chat.id
 		msgTxt = update.message.text.lower()
-		msgTokens = msgTxt.split(u'\s,;.:!?¡¿+-*/="\'\\')
+		msgTokens = re.split(',|;|!|\?|\.|\+|-|\*|/|=|¿|\s', msgTxt)
 		msgSender = update.message.sender.first_name.lower()
+
+		msg = Msg(chat_id, msgTxt, msgTokens, msgSender)
 
 		# special first
 		if("restaurang" in msgTxt or
@@ -384,8 +382,8 @@ while(True):
 		if( "gus" in msgSender):
 			checkGus(update)
 
-		if( "arturo" in msgSender):
-			checkArturo(update)
+		if( "arturo" in msg.sender):
+			checkArturo(msg)
 
 		if( "diego" in msgSender):
 			checkDiego(update)
@@ -412,7 +410,7 @@ while(True):
 
 		# fragments
 		if( "lunch" in msgTxt ):
-			checkLunch(update)
+			checkLunch(msg)
 
 		if("resta" in msgTxt):
 			checkRestaurants(update)
