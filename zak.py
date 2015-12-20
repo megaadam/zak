@@ -208,6 +208,22 @@ def genericLunch(msg):
 	print botSpeak
 	bot.send_message(msg.chatId, botSpeak).wait()
 
+def checkFood(msg):
+	nick = nickname(msg.sender)
+
+	if(T.hour() < 6):
+		botSpeak = vocab.getMidnightFood(msg)
+		bot.send_message(msg.chatId, botSpeak).wait()
+		return
+
+	if(msg.sender == "arturo"):
+		botSpeak = vocab.getArtFood(msg)
+		bot.send_message(msg.chatId, botSpeak).wait()
+		return
+
+	botSpeak = vocab.getFood(msg)
+	bot.send_message(msg.chatId, botSpeak).wait()
+
 def checkLunch(msg):
 	nick = nickname(msg.sender)
 
@@ -342,8 +358,6 @@ msgTxt = update.message.text.lower()
 msgTokens = msgTxt.split(u'\s,;.:!?¡¿+-*/="\'\\')
 msgSender = update.message.sender.first_name.lower()
 msg = Msg(chat_id, msgTxt, msgTokens, msgSender)
-print msg.sender
-print update
 startupGreeting(msg)
 
 
@@ -363,6 +377,8 @@ while(True):
 		msgTxt = update.message.text.lower()
 		msgTokens = re.split(',|;|!|\?|\.|\+|-|\*|/|=|¿|\s', msgTxt)
 		msgSender = update.message.sender.first_name.lower()
+
+		# msgSender = "arturo"
 
 		msg = Msg(chat_id, msgTxt, msgTokens, msgSender)
 
@@ -391,6 +407,7 @@ while(True):
 		# Greetings
 		if("zack" in msgTxt or
 		"zakk" in msgTxt or
+		"zakie" in msgTxt or
 		"zok" in msgTxt or
 		"za!k" in msgTxt or
 		"z!ak" in msgTxt or
@@ -411,6 +428,9 @@ while(True):
 		# fragments
 		if( "lunch" in msgTxt ):
 			checkLunch(msg)
+
+		if( "food" in msgTxt ):
+			checkFood(msg)
 
 		if("resta" in msgTxt):
 			checkRestaurants(update)

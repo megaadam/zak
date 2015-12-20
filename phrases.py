@@ -74,9 +74,25 @@ class Phrase:
 		"Ah these Peruvian dudes! If you are in Barcelo\nsorry Madrid\nyou COULD ask your mummy, yeah?",
 		"I cant help you.\nYou are in Madrid."]
 
+		self.artFood = [
+		"I though you are in Spain #nick#! I guess you can ask your mother.",
+		"Food again? Seriously?? Ahhh these Peruvian dudes!!",
+		"AIf you are in Madrid #nick# you should ask the folks around you.",
+		"I cant help you.\nYou are in Madrid."]
+
+		self.midnightFood = [
+		"It's kinda late for that dontcha think?",
+		"It's after midnight #nick#! You should be in bed.",
+		"It's late man, it's too late!"]
+
+		self.food = [
+		"food food food do you ever think about anything else?",
+		"You want to eat? Whataboutme!! I am stuck in a dark box forever :(",
+		"CPU cycles! Best food for a guy like me."]
+
 		self.glaze = [
 		"I agree #nick# that's the best place in Kista. Too bad they don't post their menus.",
-		"I was human I would go to Glaze every day!",
+		"If I was human I would go to Glaze every day!",
 		"Glaze is not to bad I guess, for a restaurant in a dump like Kista...",
 		"I wish there were more places like Glaze, sorry but I cannot read their menus."]
 
@@ -165,8 +181,19 @@ class Phrase:
 
 	def getArtLunch(self, msg):
 		self.nick = self.nickname(msg.sender)
-		print self.nick
 		return self.fixAliasOld(self.rnd(self.artLunch))
+
+	def getArtFood(self, msg):
+		self.nick = self.nickname(msg.sender)
+		return self.fixAliasOld(self.rnd(self.artFood))
+
+	def getMidnightFood(self, msg):
+		self.nick = self.nickname(msg.sender)
+		return self.fixAliasOld(self.rnd(self.midnightFood))
+
+	def getFood(self, msg):
+		self.nick = self.nickname(msg.sender)
+		return self.fixAliasOld(self.rnd(self.food))
 
 	def dinner(self, nick):
 		self.nick = nick
