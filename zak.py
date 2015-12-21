@@ -54,6 +54,15 @@ def checkGus(update):
 		botSpeak = "Ask me about meals, this time it really works! Promise."
 		bot.send_message(chat_id, botSpeak).wait()
 
+hiStefano = False
+def checkStefano(msg):
+	global hiStefano
+
+	if(hiStefano == False):
+		hiStefano=True
+		botSpeak = vocab.getHiStefano(msg)
+		bot.send_message(msg.chatId, botSpeak).wait()
+
 hiArturo = False
 def checkArturo(msg):
 	global hiArturo
@@ -377,7 +386,6 @@ while(True):
 		msgTxt = update.message.text.lower()
 		msgTokens = re.split(',|;|!|\?|\.|\+|-|\*|/|=|¿|\s', msgTxt)
 		msgSender = update.message.sender.first_name.lower()
-
 		# msgSender = "arturo"
 
 		msg = Msg(chat_id, msgTxt, msgTokens, msgSender)
@@ -403,6 +411,10 @@ while(True):
 
 		if( "diego" in msgSender):
 			checkDiego(update)
+
+		if( "stefano" in msgSender):
+			msg.sender = "stefano"
+			checkStefano(msg)
 
 		# Greetings
 		if("zack" in msgTxt or

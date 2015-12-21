@@ -51,8 +51,6 @@ class Menu:
 
 			req.encoding = 'utf-8'
 			htmlText = req.text
-			print req.encoding
-			print htmlText
 
 		except requests.exceptions.ConnectionError:
 			self.localmode = True

@@ -11,7 +11,8 @@ class Phrase:
 		"Arturo": ["Arturo", "Artie", "Arturix", "R2", "artoooo", u"Arturiño", "Diztroyer of Badness", "Destroyer of Badness", u"Dooderiño", "Hombre", "Smarturo", "Zapata", "Zapatito", "mi amor"],
 		"Gustav": ["Gustav", "Gus", "Gustavo", "Gus doood", "Gee One", "dude", "Mister", "Gus-man"],
 		"Adamski": ["Adamski", "Adam", "Adamito", "Hungarian dude", "dood", "Mister", "Adamsson", u"Adamiño"],
-		"Diego": ["Diego", "D1", "Diegs", "Diegito", u"Señor"] # Diego is the only true Señor
+		"Diego": ["Diego", "D1", "Diegs", "Diegito", u"Señor"], # Diego is the only true Señor
+		"Stefano": ["Stefano", "Dottore", "Signor Vecchi", "Stefanino", "colleca"]
 		}
 
 		self.greeting1 =[
@@ -33,6 +34,9 @@ class Phrase:
 		"Hi #nick#! \nHowz Madrid?\nCold in December eh?",
 		"Hey! Are you still in Madrid?",
 		"toc toc"]
+
+		self.hiStefano = [
+		u"Mr Vecchi, what a pleasure! I believe we have not met before."]
 
 		self.dinners = [ 
 		"For dinner, #nick#, I would recommend a 1972 Chateau de la Père et ses Frères",
@@ -170,6 +174,9 @@ class Phrase:
 
 	def getHiArturo(self, msg):
 		return self.fixAlias(self.rnd(self.hiArturo), msg)
+
+	def getHiStefano(self, msg):
+		return self.fixAlias(self.rnd(self.hiStefano), msg)
 
 	def getZack1(self, nick):
 		self.nick = nick
