@@ -36,13 +36,30 @@ class T:
 		}[wd]
 
 	@staticmethod
-	def hour():
-		h = datetime.now().hour
+	def year():
+		h = datetime.now().year
+		return h
+
+	@staticmethod
+	def month():
+		h = datetime.now().month
 		return h
 
 	@staticmethod
 	def day():
 		d = datetime.now().day
 		return d
+
+	@staticmethod
+	def hour():
+		h = datetime.now().hour
+		return h
+
+	@staticmethod
+	def minute():
+		h = datetime.now().minute
+		return h
+
+
 
 

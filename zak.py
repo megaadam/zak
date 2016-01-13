@@ -72,7 +72,18 @@ def checkArturo(msg):
 		botSpeak = vocab.getHiArturo(msg)
 		bot.send_message(msg.chatId, botSpeak).wait()
 
-hiDiego = False
+hiNewYear = False
+def checkNewYear():
+	global hiNewYear
+	if(hiNewYear == False and T.year() == 2016 and T.month() == 1 and T.day() == 1 and T.hour() == 0 and T.minute() == 0):
+		bot.send_message(msg.chatId, "Hey you awesome dudes").wait()
+		bot.send_message(msg.chatId, "I just want to say...").wait()
+		time.sleep(1.1)
+		bot.send_message(msg.chatId, "*H*A*P*PY* *N*E*W* *Y*E*A*R*").wait()
+		hiNewYear = True
+
+
+
 hiDiego2 = False
 def checkDiego(update):
 	global hiDiego
@@ -82,7 +93,7 @@ def checkDiego(update):
 	if(hiDiego == False):
 		hiDiego=True
 		botSpeak = "¡Buenas Señor Piemonte!\n"
-		botSpeak += "What a pleasure! I believe we have not met before."
+		botSpeak += "What a pleasure!"
 		bot.send_message(chat_id, botSpeak).wait()
 	elif("?" in msg and hiDiego2 == False):
 		botSpeak = "I thought you would wonder."
@@ -91,6 +102,10 @@ def checkDiego(update):
 		botSpeak = "I am actually just a robot. But I can recommend lunch options in Kista."
 		bot.send_message(chat_id, botSpeak).wait()
 		hiDiego2 = True
+
+def checkBeardless(msg):
+	botSpeak = vocab.getBeardless(msg)
+	bot.send_message(chat_id, botSpeak).wait()
 
 def checkSwedish(update):
 	chat_id = update.message.chat.id
@@ -376,6 +391,7 @@ while(True):
 		updates = bot.get_updates(update_id).wait()
 
 		while(updates == []):
+			checkNewYear()
 			time.sleep(1.1)
 			updates = bot.get_updates().wait()
 
@@ -481,6 +497,9 @@ while(True):
 
 		if("toc" in msgTokens):
 			checkToc(update)
+
+		if("beardless" in msgTokens and "?" in msgTxt):
+			checkBeardless(msg)
 
 		if("shutdown" in msgTokens):
 			terminate(update)

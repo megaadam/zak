@@ -30,13 +30,14 @@ class Phrase:
 		"So who is leaving HSS this week then?"]
 
 		self.hiArturo = [
-		u"Eyy muchaco! ¿Que Pasa?",
-		"Hi #nick#! \nHowz Madrid?\nCold in December eh?",
-		"Hey! Are you still in Madrid?",
-		"toc toc"]
+		#u"Eyy muchaco! ¿Que Pasa?",
+		"Hey #nick#!! \nHowz Madrid?\nCold in December eh?",
+		#"Hey! Are you still in Madrid?",
+		#"toc toc"
+		]
 
 		self.hiStefano = [
-		u"Mr Vecchi, what a pleasure! I believe we have not met before."]
+		u"Mr Vecchi, what a pleasure!"]
 
 		self.dinners = [ 
 		"For dinner, #nick#, I would recommend a 1972 Chateau de la Père et ses Frères",
@@ -83,6 +84,10 @@ class Phrase:
 		"Food again? Seriously?? Ahhh these Peruvian dudes!!",
 		"AIf you are in Madrid #nick# you should ask the folks around you.",
 		"I cant help you.\nYou are in Madrid."]
+
+		self.beardlessPharma = [
+		"Thank you for asking #nick#! \nThe Beardless shall have great food and exquisite cocktails on Friday the 29th this month. 19:00 at Pharmarium, Gamla Stan.",
+		"I thought Adamski already told you!\nPharmarium Fri 29/1 19:00."]
 
 		self.midnightFood = [
 		"It's kinda late for that dontcha think?",
@@ -167,9 +172,13 @@ class Phrase:
 ########################################################################################
 ##	the vocab
 	def getGreeting1(self, msg):
+		if(T.year() == 2015):
+			return "The end is near dudes. The end is near."
 		return self.fixAlias(self.rnd(self.greeting1), msg)
 
 	def getGreeting2(self, msg):
+		if(T.year() == 2015):
+			return ""
 		return self.fixAlias(self.rnd(self.greeting2), msg)
 
 	def getHiArturo(self, msg):
@@ -177,6 +186,9 @@ class Phrase:
 
 	def getHiStefano(self, msg):
 		return self.fixAlias(self.rnd(self.hiStefano), msg)
+
+	def getBeardless(self, msg):
+		return self.fixAlias(self.rnd(self.beardlessPharma), msg)
 
 	def getZack1(self, nick):
 		self.nick = nick
