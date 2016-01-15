@@ -256,11 +256,6 @@ def checkLunch(msg):
 		bot.send_message(msg.chatId, botSpeak).wait()
 		return
 
-	if(msg.sender == "arturo"):
-		botSpeak = vocab.getArtLunch(msg)
-		bot.send_message(msg.chatId, botSpeak).wait()
-		return
-
 	if(T.weekend()):
 		botSpeak = nick + " get real! The Kista restaurants are closed on " + T.weekday() + "s"
 		bot.send_message(msg.chatId, botSpeak).wait()

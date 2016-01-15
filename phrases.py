@@ -31,8 +31,8 @@ class Phrase:
 
 		self.hiArturo = [
 		#u"Eyy muchaco! ¿Que Pasa?",
-		"Hey #nick#!! \nHowz Madrid?\nCold in December eh?",
-		#"Hey! Are you still in Madrid?",
+		"Hey #nick#!! \nHow wozz Madrid?\nNice to see you back!",
+		"Hey! When did you get back from Madrid?",
 		#"toc toc"
 		]
 
@@ -73,17 +73,9 @@ class Phrase:
 		"Nah, breakfast is for idiots, I eat CPU cycles.",
 		"Just black coffe, thank you."]
 
-		self.artLunch = [
-		"I though you were in Spain #nick#, why dontcha ask your mum?",
-		"You could ask your mother to cook for you #nick#. She is in the next room isn't she?",
-		"Ah these Peruvian dudes! If you are in Barcelo\nsorry Madrid\nyou COULD ask your mummy, yeah?",
-		"I cant help you.\nYou are in Madrid."]
-
 		self.artFood = [
-		"I though you are in Spain #nick#! I guess you can ask your mother.",
 		"Food again? Seriously?? Ahhh these Peruvian dudes!!",
-		"AIf you are in Madrid #nick# you should ask the folks around you.",
-		"I cant help you.\nYou are in Madrid."]
+		"Man!\nYou are always hungry!"]
 
 		self.beardlessPharma = [
 		"Thank you for asking #nick#! \nThe Beardless shall have great food and exquisite cocktails on Friday the 29th this month. 19:00 at Pharmarium, Gamla Stan.",
@@ -197,10 +189,6 @@ class Phrase:
 	def getZack2(self, nick):
 		self.nick = nick
 		return self.fixAliasOld(self.rnd(self.zack2))
-
-	def getArtLunch(self, msg):
-		self.nick = self.nickname(msg.sender)
-		return self.fixAliasOld(self.rnd(self.artLunch))
 
 	def getArtFood(self, msg):
 		self.nick = self.nickname(msg.sender)
