@@ -12,7 +12,6 @@ As another hacker had created a lunch menu aggregation web-page (for the Ericsso
 
 Eventually Zak evolved towards fun without any strengthening of the original lunch-negotiating purpose. He is a rather odd personality. He is normally very cheerful, and loves to call his closest friends by a large number of different nicknames. And he loves to make fun of pepole if they ask for lunch during off hours. But if you try to call him by any nickname such as Zakk, Zacky, Z!ak, Za?k, he gets rather grumpy!
 
-
 Dizclaimer
 ==========
 The bot code is in a constant state of partial refactoring. Hence the response-lookup is rather inconsistent, for example where all calls to phrases/fixAliasOld() should have been changed to phrases/fixAlias(). The same sort inconsistency is true for  the "phrase understanding" statements [direct and via the "check...()"] in the main loop which should all be wrapped. 
