@@ -40,6 +40,9 @@ def startupGreeting(msg):
 	time.sleep(1.5)
 	botSpeak = vocab.getGreeting2(msg)
 	bot.send_message(chat_id, botSpeak).wait()
+        
+        time.sleep(15)
+        bot.send_message(chat_id, "GUYS!!! Haven't you been missing me???").wait() 
 
 hiGus = False
 def checkGus(update):
@@ -48,11 +51,21 @@ def checkGus(update):
 
 	if(hiGus == False):
 		hiGus=True
-		botSpeak = "Tjenare Gustavsson! long time no see."
-		bot.send_message(chat_id, botSpeak).wait()
 
-		botSpeak = "Ask me about meals, this time it really works! Promise."
+		botSpeak = "Oi!! Gusti! Long time no see."
 		bot.send_message(chat_id, botSpeak).wait()
+                time.sleep(3)
+
+                botSpeak = "I am really curious now..."
+                bot.send_message(chat_id, botSpeak).wait()
+                time.sleep(1.1)
+
+                botSpeak = "Is Berlin really as cool as they say?"
+                bot.send_message(chat_id, botSpeak).wait()
+
+
+
+		
 
 hiStefano = False
 def checkStefano(msg):
@@ -72,10 +85,20 @@ def checkArturo(msg):
 		botSpeak = vocab.getHiArturo(msg)
 		bot.send_message(msg.chatId, botSpeak).wait()
 
+                botSpeak = "Is everything super...."
+                bot.send_message(chat_id, botSpeak).wait()
+                time.sleep(5)
+
+                botSpeak = "... I mean at Supertext?"
+                bot.send_message(chat_id, botSpeak).wait()
+                time.sleep(4)
+                
+
+
 hiNewYear = False
 def checkNewYear():
 	global hiNewYear
-	if(hiNewYear == False and T.year() == 2016 and T.month() == 1 and T.day() == 1 and T.hour() == 0 and T.minute() == 0):
+	if(hiNewYear == False and T.month() == 1 and T.day() == 1 and T.hour() == 0 and T.minute() == 0):
 		bot.send_message(msg.chatId, "Hey you awesome dudes").wait()
 		bot.send_message(msg.chatId, "I just want to say...").wait()
 		time.sleep(1.1)
@@ -83,7 +106,7 @@ def checkNewYear():
 		hiNewYear = True
 
 
-
+hiDiego = False
 hiDiego2 = False
 def checkDiego(update):
 	global hiDiego
@@ -95,12 +118,32 @@ def checkDiego(update):
 		botSpeak = "¡Buenas Señor Piemonte!\n"
 		botSpeak += "What a pleasure!"
 		bot.send_message(chat_id, botSpeak).wait()
+                time.sleep(2.5)
+
+                botSpeak = "Did you start the second batch yet?"
+                bot.send_message(chat_id, botSpeak).wait()
+                time.sleep(1)
+
+                botSpeak = "of NBDi ??"
+                bot.send_message(chat_id, botSpeak).wait()
+
+
 	elif("?" in msg and hiDiego2 == False):
 		botSpeak = "I thought you would wonder."
 		bot.send_message(chat_id, botSpeak).wait()
 		time.sleep(2)
-		botSpeak = "I am actually just a robot. But I can recommend lunch options in Kista."
+
+                botSpeak = "I really REALLY needed a break from it all. you know that feeling?"
+                bot.send_message(chat_id, botSpeak).wait()
+                time.sleep(3)
+
+		botSpeak = "I was just chillin'... bit of surfing in Southern California. Meditation in Tibet"
 		bot.send_message(chat_id, botSpeak).wait()
+                time.sleep(1)
+
+                botSpeak = "Ya know... that kind of stuff"
+                bot.send_message(chat_id, botSpeak).wait()
+
 		hiDiego2 = True
 
 def checkBeardless(msg):
@@ -349,15 +392,20 @@ f = open( "./res/tgram_token", "r")
 token = f.readline()
 f.close()
 bot = TelegramBot(token)
+print("111")
 
 bot.set_webhook() # remove all webhooks
+print("222")
+
 bot.update_bot_info().wait()
 print(bot.username)
 
 botUser = bot.get_me().wait()
-print(botUser)
+print("333: " + str(botUser))
 
 updates = bot.get_updates().wait()
+print("444: " + str(updates))
+
 while(updates == []):
 	time.sleep(1.5)
 	updates = bot.get_updates().wait()
@@ -365,6 +413,10 @@ while(updates == []):
 for update in updates:
 	update=update
 
+
+
+
+print("update: " + str(update))
 update_id = update.update_id + 1;
 
 
@@ -373,18 +425,23 @@ theMenu = Menu()
 vocab = Phrase()
 
 chat_id = update.message.chat.id
+print("chat_id:          ", chat_id)
+
+
 msgTxt = update.message.text.lower()
 msgTokens = msgTxt.split(u'\s,;.:!?¡¿+-*/="\'\\')
 msgSender = update.message.sender.first_name.lower()
 msg = Msg(chat_id, msgTxt, msgTokens, msgSender)
-startupGreeting(msg)
+
+### startupGreeting(msg)
 
 
 while(True):
 	try:
 		time.sleep(1.1)
+		print("Enter")
 		updates = bot.get_updates(update_id).wait()
-
+		print("In da loop")
 		while(updates == []):
 			checkNewYear()
 			time.sleep(1.1)

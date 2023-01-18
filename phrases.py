@@ -8,7 +8,7 @@ class Phrase:
 
 		self.phraseHistory = {}
 		self.nicks = {
-		"Arturo": ["Arturo", "Artie", "Arturix", "R2", "artoooo", u"Arturiño", "Diztroyer of Badness", "Destroyer of Badness", u"Dooderiño", "Hombre", "Smarturo", "Zapata", "Zapatito", "mi amor", "Darth Turo"],
+		"Arturo": ["Arturo", "Artoo Deco", "Artie", "Arturix", "R2", "artoooo", u"Arturiño", "Diztroyer of Badness", "Destroyer of Badness", u"Dooderiño", "Hombre", "Smarturo", "Zapata", "Zapatito", "mi amor", "Darth Turo"],
 		"Gustav": ["Gustav", "Gus", "Gustavo", "Gus doood", "Gee One", "dude", "Mister", "Gus-man"],
 		"Adamski": ["Adamski", "Adam", "Adamito", "Hungarian dude", "dood", "Mister", "Adamsson", u"Adamiño"],
 		"Diego": ["Diego", "D1", "Diegs", "Diegito", u"Señor"], # Diego is the only true Señor
